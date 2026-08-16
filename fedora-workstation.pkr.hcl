@@ -43,12 +43,12 @@ variable "disk_size" {
 
 variable "iso_url" {
   type    = string
-  default = "https://download.fedoraproject.org/pub/fedora/linux/releases/44/Server/x86_64/iso/Fedora-Server-netinst-x86_64-44-1.7.iso"
+  default = "https://download.fedoraproject.org/pub/fedora/linux/releases/44/Everything/x86_64/iso/Fedora-Everything-netinst-x86_64-44-1.7.iso"
 }
 
 variable "iso_checksum" {
   type    = string
-  default = "sha256:ae20c06bea746913cadea7d80463e13f4bf55bee4df2918111c921c674b70283"
+  default = "sha256:bd285201494dd0ba09b54d05ac707de1401668b8512a573edb5922dcf9d7067e"
 }
 
 variable "ks" {
@@ -56,14 +56,14 @@ variable "ks" {
   default = "ks.cfg"
 }
 
-source "qemu" "fedora-uefi-amd64" {
+source "qemu" "fedora-workstation-uefi-amd64" {
   accelerator       = "kvm"
   machine_type      = "q35"
   efi_boot          = true
   efi_firmware_code = "/usr/share/OVMF/OVMF_CODE_4M.fd"
   efi_firmware_vars = "/usr/share/OVMF/OVMF_VARS_4M.fd"
   cpus              = 2
-  memory            = 2 * 1024
+  memory            = 4 * 1024
   qemuargs = [
     ["-cpu", "host"]
   ]
@@ -96,16 +96,16 @@ source "qemu" "fedora-uefi-amd64" {
   shutdown_command = "echo vagrant | sudo -S poweroff"
 }
 
-source "proxmox-iso" "fedora-uefi-amd64" {
-  template_name            = "template-fedora-${var.version}-uefi"
+source "proxmox-iso" "fedora-workstation-uefi-amd64" {
+  template_name            = "template-fedora-workstation-${var.version}-uefi"
   template_description     = <<-EOS
-                              See https://github.com/rgl/fedora-vagrant
+                              See https://github.com/rgl/fedora-workstation-vagrant
 
                               ```
                               Build At: ${timestamp()}
                               ```
                               EOS
-  tags                     = "fedora-${var.version}-uefi;template"
+  tags                     = "fedora-workstation-${var.version}-uefi;template"
   insecure_skip_tls_verify = true
   node                     = var.proxmox_node
   machine                  = "q35"
@@ -130,7 +130,7 @@ source "proxmox-iso" "fedora-uefi-amd64" {
   }
   cpu_type = "host"
   cores    = 2
-  memory   = 2 * 1024
+  memory   = 4 * 1024
   vga {
     type   = "qxl"
     memory = 16
@@ -165,8 +165,8 @@ source "proxmox-iso" "fedora-uefi-amd64" {
 
 build {
   sources = [
-    "source.qemu.fedora-uefi-amd64",
-    "source.proxmox-iso.fedora-uefi-amd64",
+    "source.qemu.fedora-workstation-uefi-amd64",
+    "source.proxmox-iso.fedora-workstation-uefi-amd64",
   ]
 
   provisioner "shell" {
@@ -181,7 +181,7 @@ build {
 
   post-processor "vagrant" {
     only = [
-      "qemu.fedora-uefi-amd64",
+      "qemu.fedora-workstation-uefi-amd64",
     ]
     output               = var.vagrant_box
     vagrantfile_template = "Vagrantfile.template"

@@ -1,7 +1,7 @@
 ENV['VAGRANT_EXPERIMENTAL'] = 'typed_triggers'
 
 VM_CPUS = 2
-VM_MEMORY = 2*1024 # MB
+VM_MEMORY = 4*1024 # MB
 VM_DISK = 64 # GB
 
 PROVISION_USERNAME = 'vagrant'
@@ -102,7 +102,7 @@ cloud_init_user_data = {
 }
 
 Vagrant.configure(2) do |config|
-  config.vm.box = 'fedora-44-uefi-amd64'
+  config.vm.box = 'fedora-workstation-44-uefi-amd64'
 
   config.vm.provider 'libvirt' do |lv, config|
     lv.memory = VM_MEMORY

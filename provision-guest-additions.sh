@@ -9,6 +9,7 @@ if [ "$(systemd-detect-virt)" == "kvm" ]; then
 dnf install -y qemu-guest-agent spice-vdagent
 elif [ "$(systemd-detect-virt)" == "vmware" ]; then
 # install the VMware Guest Additions.
+# see https://packages.fedoraproject.org/pkgs/open-vm-tools/open-vm-tools-desktop/
 # see https://packages.fedoraproject.org/pkgs/open-vm-tools/open-vm-tools/
 # no need to install the guest additions, as they are already installed from
 # tmp/ks-vsphere.cfg.

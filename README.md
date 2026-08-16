@@ -1,6 +1,8 @@
-This builds an up-to-date Vagrant Fedora Base Box.
+This builds an up-to-date Vagrant Fedora Workstation Base Box.
 
-Currently this targets [Fedora](https://fedoraproject.org/) 44.
+Currently this targets [Fedora Workstation](https://fedoraproject.org/workstation/) 44.
+
+For Fedora Server see [rgl/fedora-vagrant](https://github.com/rgl/fedora-vagrant).
 
 
 # Usage
@@ -71,7 +73,7 @@ Create the template:
 make build-uefi-proxmox
 ```
 
-**NB** There is no way to use the created template with vagrant (the [vagrant-proxmox plugin](https://github.com/telcat/vagrant-proxmox) is no longer compatible with recent vagrant versions). Instead, use packer (e.g. see this repository) or terraform (e.g. see [rgl/terraform-proxmox-fedora-example](https://github.com/rgl/terraform-proxmox-fedora-example)).
+**NB** There is no way to use the created template with vagrant (the [vagrant-proxmox plugin](https://github.com/telcat/vagrant-proxmox) is no longer compatible with recent vagrant versions). Instead, use packer (e.g. see this repository) or terraform (e.g. see [rgl/terraform-proxmox-fedora-workstation-example](https://github.com/rgl/terraform-proxmox-fedora-workstation-example)).
 
 
 ### VMware vSphere usage
@@ -93,12 +95,12 @@ export GOVC_PASSWORD='password'
 export GOVC_DATACENTER='Datacenter'
 export GOVC_CLUSTER='Cluster'
 export GOVC_DATASTORE='Datastore'
-export VSPHERE_OS_ISO="[$GOVC_DATASTORE] iso/Fedora-Server-netinst-x86_64-44-1.7.iso"
+export VSPHERE_OS_ISO="[$GOVC_DATASTORE] iso/Fedora-Everything-netinst-x86_64-44-1.7.iso"
 export VSPHERE_ESXI_HOST='esxi.local'
 export VSPHERE_TEMPLATE_FOLDER='test/templates'
-export VSPHERE_TEMPLATE_NAME="$VSPHERE_TEMPLATE_FOLDER/fedora-44-uefi-amd64"
+export VSPHERE_TEMPLATE_NAME="$VSPHERE_TEMPLATE_FOLDER/fedora-workstation-44-uefi-amd64"
 export VSPHERE_VM_FOLDER='test'
-export VSPHERE_VM_NAME='fedora-44-vagrant-example'
+export VSPHERE_VM_NAME='fedora-workstation-44-vagrant-example'
 export VSPHERE_VLAN='packer'
 # set the credentials that the guest will use
 # to connect to this host smb share.
@@ -118,7 +120,7 @@ govc datacenter.info # list datacenters
 govc find # find all managed objects
 ```
 
-Download the Fedora ISO (you can find the full iso URL in the [fedora.pkr.hcl](fedora.pkr.hcl) file) and place it inside the datastore as defined by the `vsphere_iso_url` user variable that is inside the [packer template](fedora-vsphere.pkr.hcl).
+Download the Fedora ISO (you can find the full iso URL in the [fedora-workstation.pkr.hcl](fedora-workstation.pkr.hcl) file) and place it inside the datastore as defined by the `vsphere_iso_url` user variable that is inside the [packer template](fedora-workstation-vsphere.pkr.hcl).
 
 See the [example Vagrantfile](example/Vagrantfile) to see how you could use a cloud-init configuration to configure the VM.
 
