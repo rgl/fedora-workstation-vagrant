@@ -52,8 +52,7 @@ variable "iso_checksum" {
 }
 
 variable "ks" {
-  type    = string
-  default = "ks.cfg"
+  type = string
 }
 
 source "qemu" "fedora-workstation-uefi-amd64" {

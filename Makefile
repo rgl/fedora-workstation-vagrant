@@ -3,6 +3,13 @@ SHELL=bash
 
 VERSION=44
 
+MIRROR_BASE=https://eu.edge.kernel.org/fedora
+MIRROR_ARCH=${MIRROR_BASE}/releases/44/Everything/x86_64
+MIRROR_URL=${MIRROR_ARCH}/os
+MIRROR_ISO_URL=${MIRROR_ARCH}/iso/Fedora-Everything-netinst-x86_64-44-1.7.iso
+
+export PKR_VAR_iso_url=${MIRROR_ISO_URL}
+
 help:
 	@echo type one of:
 	@echo 	make build-uefi-libvirt
@@ -13,7 +20,7 @@ build-uefi-libvirt: fedora-workstation-${VERSION}-uefi-amd64-libvirt.box
 build-uefi-proxmox: fedora-workstation-${VERSION}-uefi-amd64-proxmox.box
 build-uefi-vsphere: fedora-workstation-${VERSION}-uefi-amd64-vsphere.box
 
-fedora-workstation-${VERSION}-uefi-amd64-libvirt.box: ks.cfg upgrade.sh provision.sh fedora-workstation.pkr.hcl Vagrantfile.template
+fedora-workstation-${VERSION}-uefi-amd64-libvirt.box: tmp/ks-libvirt.cfg upgrade.sh provision.sh fedora-workstation.pkr.hcl Vagrantfile.template
 	rm -f $@
 	CHECKPOINT_DISABLE=1 \
 	PACKER_LOG=1 \
@@ -24,9 +31,16 @@ fedora-workstation-${VERSION}-uefi-amd64-libvirt.box: ks.cfg upgrade.sh provisio
 	PACKER_LOG=1 \
 	PACKER_LOG_PATH=$@.log \
 	PKR_VAR_version=${VERSION} \
+	PKR_VAR_ks=tmp/ks-libvirt.cfg \
 	PKR_VAR_vagrant_box=$@ \
 		packer build -only=qemu.fedora-workstation-uefi-amd64 -on-error=abort -timestamp-ui fedora-workstation.pkr.hcl
 	@./box-metadata.sh libvirt fedora-workstation-${VERSION}-uefi-amd64 $@
+
+tmp/ks-libvirt.cfg: ks.cfg
+	mkdir -p tmp
+	sed -E \
+		's,@@MIRROR_URL@@,${MIRROR_URL},g' \
+		ks.cfg >$@
 
 fedora-workstation-${VERSION}-uefi-amd64-proxmox.box: tmp/ks-proxmox.cfg upgrade.sh provision.sh fedora-workstation.pkr.hcl Vagrantfile.template
 	rm -f $@
@@ -46,7 +60,10 @@ fedora-workstation-${VERSION}-uefi-amd64-proxmox.box: tmp/ks-proxmox.cfg upgrade
 # see https://packages.fedoraproject.org/pkgs/qemu/qemu-guest-agent/
 tmp/ks-proxmox.cfg: ks.cfg
 	mkdir -p tmp
-	sed -E 's,(%packages .+),\1\nqemu-guest-agent,g' ks.cfg >$@
+	sed -E \
+		's,@@MIRROR_URL@@,${MIRROR_URL},g' \
+		's,(%packages .+),\1\nqemu-guest-agent,g' \
+		ks.cfg >$@
 
 fedora-workstation-${VERSION}-uefi-amd64-vsphere.box: tmp/ks-vsphere.cfg provision.sh fedora-workstation-vsphere.pkr.hcl Vagrantfile.template
 	rm -f $@
@@ -70,7 +87,10 @@ fedora-workstation-${VERSION}-uefi-amd64-vsphere.box: tmp/ks-vsphere.cfg provisi
 # see https://packages.fedoraproject.org/pkgs/open-vm-tools/open-vm-tools/
 tmp/ks-vsphere.cfg: ks.cfg
 	mkdir -p tmp
-	sed -E 's,(%packages .+),\1\nopen-vm-tools-desktop,g' ks.cfg >$@
+	sed -E \
+		's,@@MIRROR_URL@@,${MIRROR_URL},g' \
+		's,(%packages .+),\1\nopen-vm-tools-desktop,g' \
+		ks.cfg >$@
 
 .PHONY: \
 	build-uefi-libvirt \
